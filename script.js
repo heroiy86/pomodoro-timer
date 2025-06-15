@@ -20,76 +20,6 @@ const sessionCountElement = document.getElementById('session-count');
 const modeButtons = document.querySelectorAll('.mode-btn');
 const workTimeInput = document.getElementById('work-time-input');
 const autoModeCheckbox = document.getElementById('auto-mode');
-const notificationSound = document.getElementById('notification-sound');
-
-// イベントリスナー
-// 自動連続モードの切り替え
-autoModeCheckbox.addEventListener('change', () => {
-    isAutoMode = autoModeCheckbox.checked;
-});
-
-// 作業時間の変更を監視
-workTimeInput.addEventListener('change', (e) => {
-    const newTime = parseInt(e.target.value);
-    if (newTime >= 1 && newTime <= 120) {
-        workTime = newTime;
-        if (currentMode === 'work') {
-            time = workTime * 60;
-            updateDisplay();
-        }
-    }
-});
-
-// モードボタンのクリックイベント
-modeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const mode = button.dataset.mode;
-        switchMode(mode);
-        updateDisplay();
-    });
-});
-
-// タイマーコントロールのイベントリスナー
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
-resetBtn.addEventListener('click', resetTimer);
-
-// タイマーカウントダウン
-if (timerId) {
-    clearInterval(timerId);
-    timerId = setInterval(() => {
-        if (time <= 0) {
-            stopTimer();
-            // 通知の表示
-            if ('Notification' in window) {
-                const notification = new Notification('ポモドーロタイマー', {
-                    body: `時間になりました！${currentMode === 'work' ? '作業' : '休憩'}が終了しました。`,
-                    icon: '/favicon.ico',
-                    tag: 'pomodoro-timer'
-                });
-                
-                // 通知がクリックされた時の処理
-                notification.onclick = () => {
-                    window.focus();
-                };
-            }
-            
-            playNotificationSound();
-            if (isAutoMode) {
-                switchMode(currentMode === 'work' ? 'short-break' : 'work');
-                startTimer();
-            } else {
-                if (currentMode === 'work') {
-                    sessionCount++;
-                    updateSessionCount();
-                }
-            }
-            return;
-        }
-        time--;
-        updateDisplay();
-    }, 1000);
-}
 
 // モードと対応する時間（秒）
 const modeTimes = {
@@ -97,73 +27,6 @@ const modeTimes = {
     'short-break': SHORT_BREAK_TIME * 60,     // 短い休憩: 5分
     'long-break': LONG_BREAK_TIME * 60      // 長い休憩: 15分
 };
-
-// 音声関連の設定
-let isAudioReady = false;
-let audioStatusElement = document.getElementById('audio-status');
-const testSoundButton = document.getElementById('test-sound');
-
-// テスト音声ボタンのイベントリスナー
-testSoundButton.addEventListener('click', async () => {
-    try {
-        // ユーザーのアクションに紐づけて音声を再生
-        await notificationSound.play();
-        notificationSound.pause();
-        notificationSound.currentTime = 0;
-        isAudioReady = true;
-        audioStatusElement.textContent = '音声再生の準備完了！';
-        testSoundButton.textContent = 'テスト音声 (準備完了)';
-    } catch (error) {
-        console.error('音声再生の許可が必要です:', error);
-        audioStatusElement.textContent = '音声再生の許可が必要です。';
-    }
-});
-
-// 音声ファイルの長さを確認
-notificationSound.addEventListener('loadedmetadata', () => {
-    console.log('音声ファイルの長さ:', notificationSound.duration, '秒');
-    audioStatusElement.textContent = '音声ファイルが読み込まれました。';
-});
-
-// 音声再生の許可をリクエスト
-notificationSound.addEventListener('canplaythrough', () => {
-    audioStatusElement.textContent = '音声ファイルが読み込み完了しました。';
-});
-
-notificationSound.volume = 0.5; // 音量を50%に設定
-notificationSound.loop = false; // ループ再生を無効
-
-// 音声再生関数
-function playNotificationSound() {
-    if (!isAudioReady) {
-        audioStatusElement.textContent = '音声再生の準備が完了していません。';
-        return;
-    }
-    
-    if (!notificationSound.paused) {
-        notificationSound.pause();
-    }
-    notificationSound.currentTime = 0;
-    
-    notificationSound.play().catch(error => {
-        console.error('音声再生に失敗しました:', error);
-        audioStatusElement.textContent = '音声再生に失敗しました。';
-    });
-}
-
-// イベントリスナーの設定
-// 自動連続モードの切り替え
-autoModeCheckbox.addEventListener('change', () => {
-    isAutoMode = autoModeCheckbox.checked;
-});
-
-// 作業時間の変更を監視
-workTimeInput.addEventListener('change', (e) => {
-    const newTime = parseInt(e.target.value);
-    if (newTime >= 1 && newTime <= 120) {
-        workTime = newTime;
-        if (currentMode === 'work') {
-            time = workTime * 60;
 
 // ユーティリティ関数
 function formatTime(seconds) {
@@ -196,7 +59,6 @@ function startTimer() {
     timerId = setInterval(() => {
         if (time <= 0) {
             stopTimer();
-            playNotificationSound();
             
             // 自動連続モードの処理
             if (isAutoMode) {
@@ -253,16 +115,69 @@ function switchMode(mode) {
 
 (function() {
     // イベントリスナーの設定
+    // 自動連続モードの切り替え
+    autoModeCheckbox.addEventListener('change', () => {
+        isAutoMode = autoModeCheckbox.checked;
+    });
+
+    // 作業時間の変更を監視
+    workTimeInput.addEventListener('change', (e) => {
+        const newTime = parseInt(e.target.value);
+        if (newTime >= 1 && newTime <= 120) {
+            workTime = newTime;
+            if (currentMode === 'work') {
+                time = workTime * 60;
+                updateDisplay();
+            }
+        }
+    });
+
+    // モードボタンのクリックイベント
+    modeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.mode;
+            switchMode(mode);
+            updateDisplay();
+        });
+    });
+
+    // タイマーコントロールのイベントリスナー
     startBtn.addEventListener('click', startTimer);
     stopBtn.addEventListener('click', stopTimer);
     resetBtn.addEventListener('click', resetTimer);
 
-    modeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            switchMode(button.dataset.mode);
-            updateModeButtons();
-        });
-    });
+    // タイマーカウントダウン
+    if (timerId) {
+        clearInterval(timerId);
+        timerId = setInterval(() => {
+            if (time <= 0) {
+                stopTimer();
+                
+                // 自動連続モードの処理
+                if (isAutoMode) {
+                    if (currentMode === 'work') {
+                        // 作業 → 短い休憩
+                        switchMode('short-break');
+                        startTimer(); // 自動的に開始
+                    } else if (currentMode === 'short-break') {
+                        // 短い休憩 → 作業
+                        switchMode('work');
+                        startTimer(); // 自動的に開始
+                    }
+                    return;
+                }
+                
+                alert('時間になりました！');
+                if (currentMode === 'work') {
+                    sessionCount++;
+                    updateSessionCount();
+                }
+                return;
+            }
+            time--;
+            updateDisplay();
+        }, 1000);
+    }
 
     // 初期設定
     updateDisplay();
