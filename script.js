@@ -269,3 +269,23 @@ function switchMode(mode) {
     updateSessionCount();
     updateModeButtons();
 })();
+
+// メイン関数の実行
+(function main() {
+    // イベントリスナーの設定
+    startBtn.addEventListener('click', startTimer);
+    stopBtn.addEventListener('click', stopTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    modeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            switchMode(button.dataset.mode);
+            updateModeButtons();
+        });
+    });
+
+    // 初期設定
+    updateDisplay();
+    updateSessionCount();
+    updateModeButtons();
+})();
