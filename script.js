@@ -202,22 +202,11 @@ window.addEventListener('load', () => {
         }
     }, { once: true });
 });
-    .catch(() => {
-        console.log('音声再生の許可が必要です。');
-    })
-    .then(() => {
-        notificationSound.pause();
-    });
-
-// 音声再生関数
-function playNotificationSound() {
-    if (!notificationSound.paused) {
-        notificationSound.pause();
-    }
     notificationSound.currentTime = 0;
     notificationSound.play().catch(error => {
         console.error('音声再生に失敗しました:', error);
     });
+    notificationSound.pause();
 }
 
 // イベントリスナー
