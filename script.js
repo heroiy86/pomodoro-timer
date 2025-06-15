@@ -78,35 +78,6 @@ function allowSleep() {
     document.body.style.opacity = ''; // スタイルをリセット
 }
 
-// DOM要素
-const timeDisplay = document.querySelector('.time-display');
-const startBtn = document.getElementById('start');
-const stopBtn = document.getElementById('stop');
-const resetBtn = document.getElementById('reset');
-const sessionCountElement = document.getElementById('session-count');
-const modeButtons = document.querySelectorAll('.mode-btn');
-const workTimeInput = document.getElementById('work-time-input');
-const autoModeCheckbox = document.getElementById('auto-mode');
-const notificationSound = document.getElementById('notification-sound');
-
-// イベントリスナー
-// 自動連続モードの切り替え
-autoModeCheckbox.addEventListener('change', () => {
-    isAutoMode = autoModeCheckbox.checked;
-});
-
-// 作業時間の変更を監視
-workTimeInput.addEventListener('change', (e) => {
-    const newTime = parseInt(e.target.value);
-    if (newTime >= 1 && newTime <= 120) {
-        workTime = newTime;
-        if (currentMode === 'work') {
-            time = workTime * 60;
-            updateDisplay();
-        }
-    }
-});
-
 // モードと対応する時間（秒）
 const modeTimes = {
     'work': workTime * 60,     // 作業モード: 設定された時間
@@ -137,6 +108,40 @@ function playNotificationSound() {
         console.error('音声再生に失敗しました:', error);
     });
 }
+
+// イベントリスナー
+// 自動連続モードの切り替え
+autoModeCheckbox.addEventListener('change', () => {
+    isAutoMode = autoModeCheckbox.checked;
+});
+
+// 作業時間の変更を監視
+workTimeInput.addEventListener('change', (e) => {
+    const newTime = parseInt(e.target.value);
+    if (newTime >= 1 && newTime <= 120) {
+        workTime = newTime;
+        if (currentMode === 'work') {
+            time = workTime * 60;
+            updateDisplay();
+        }
+    }
+});
+
+// モードボタンのクリックイベント
+modeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const mode = button.dataset.mode;
+        switchMode(mode);
+        updateDisplay();
+    });
+});
+
+// タイマーコントロールのイベントリスナー
+startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+
 
 // ユーティリティ関数
 function formatTime(seconds) {
