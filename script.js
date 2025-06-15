@@ -102,6 +102,14 @@ const modeTimes = {
 notificationSound.volume = 0.5; // 音量を50%に設定
 notificationSound.loop = false; // ループ再生を無効
 
+// 音声ファイルの長さを確認
+notificationSound.addEventListener('loadedmetadata', () => {
+    console.log('音声ファイルの長さ:', notificationSound.duration, '秒');
+});
+
+// 音声再生の許可をリクエスト
+notificationSound.play()
+
 // 音声再生の許可をリクエスト
 notificationSound.play()
     .catch(() => {
