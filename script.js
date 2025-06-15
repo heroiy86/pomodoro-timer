@@ -178,37 +178,6 @@ modeButtons.forEach(button => {
     });
 });
 
-// タイマーコントロールのイベントリスナー
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
-resetBtn.addEventListener('click', resetTimer);
-
-// ページ読み込み時の初期化
-window.addEventListener('load', () => {
-    // ユーザーのアクションを待って音声再生の許可を取得
-    document.addEventListener('click', async () => {
-        if (!isAudioReady) {
-            try {
-                await notificationSound.play();
-                notificationSound.pause();
-                notificationSound.currentTime = 0;
-                isAudioReady = true;
-                audioStatusElement.textContent = '音声再生の準備完了！';
-                testSoundButton.textContent = 'テスト音声 (準備完了)';
-            } catch (error) {
-                console.error('音声再生の許可が必要です:', error);
-                audioStatusElement.textContent = '音声再生の許可が必要です。';
-            }
-        }
-    }, { once: true });
-});
-    notificationSound.currentTime = 0;
-    notificationSound.play().catch(error => {
-        console.error('音声再生に失敗しました:', error);
-    });
-    notificationSound.pause();
-}
-
 // イベントリスナー
 // 自動連続モードの切り替え
 autoModeCheckbox.addEventListener('change', () => {
@@ -238,6 +207,28 @@ modeButtons.forEach(button => {
 
 // タイマーコントロールのイベントリスナー
 startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+// ページ読み込み時の初期化
+window.addEventListener('load', () => {
+    // ユーザーのアクションを待って音声再生の許可を取得
+    document.addEventListener('click', async () => {
+        if (!isAudioReady) {
+            try {
+                await notificationSound.play();
+                notificationSound.pause();
+                notificationSound.currentTime = 0;
+                isAudioReady = true;
+                audioStatusElement.textContent = '音声再生の準備完了！';
+                testSoundButton.textContent = 'テスト音声 (準備完了)';
+            } catch (error) {
+                console.error('音声再生の許可が必要です:', error);
+                audioStatusElement.textContent = '音声再生の許可が必要です。';
+            }
+        }
+    }, { once: true });
+});
 stopBtn.addEventListener('click', stopTimer);
 resetBtn.addEventListener('click', resetTimer);
 
