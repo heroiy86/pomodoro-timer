@@ -89,13 +89,6 @@ h1 {
     cursor: pointer;
 }
 
-.auto-mode-info,
-.prevent-sleep-info {
-    font-size: 12px;
-    color: #999;
-    margin-left: 10px;
-}
-
 .work-time-selector input {
     width: 60px;
     padding: 5px;

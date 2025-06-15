@@ -11,8 +11,6 @@ let currentMode = 'work'; // 現在のモード
 let sessionCount = 1; // セッション数
 let workTime = INITIAL_WORK_TIME; // 作業時間（分）
 let isAutoMode = false; // 自動連続モードの状態
-let isPreventSleep = false; // スリープ防止の状態
-
 // DOM要素
 const timeDisplay = document.querySelector('.time-display');
 const startBtn = document.getElementById('start');
@@ -23,72 +21,74 @@ const modeButtons = document.querySelectorAll('.mode-btn');
 const workTimeInput = document.getElementById('work-time-input');
 const autoModeCheckbox = document.getElementById('auto-mode');
 const notificationSound = document.getElementById('notification-sound');
-const preventSleepCheckbox = document.getElementById('prevent-sleep'); // スリープ防止のチェックボックス
 
-// スリープ防止の設定
-preventSleepCheckbox.addEventListener('change', () => {
-    isPreventSleep = preventSleepCheckbox.checked;
-    if (isPreventSleep) {
-        preventSleep();
-    } else {
-        allowSleep();
+// イベントリスナー
+// 自動連続モードの切り替え
+autoModeCheckbox.addEventListener('change', () => {
+    isAutoMode = autoModeCheckbox.checked;
+});
+
+// 作業時間の変更を監視
+workTimeInput.addEventListener('change', (e) => {
+    const newTime = parseInt(e.target.value);
+    if (newTime >= 1 && newTime <= 120) {
+        workTime = newTime;
+        if (currentMode === 'work') {
+            time = workTime * 60;
+            updateDisplay();
+        }
     }
 });
 
-// スリープ防止関数
-function preventSleep() {
-    // スクリーンの明るさを最大に設定
-    document.body.style.opacity = '1';
-    
-    // タッチイベントを追加してスリープ防止
-    if (isRunning) {
-        const preventSleepInterval = setInterval(() => {
-            document.body.dispatchEvent(new Event('touchstart'));
-        }, 30000); // 30秒ごとにタッチイベントを発火
-        
-        // タイマーカウントダウンが0になったときにクリア
-        if (timerId) {
-            clearInterval(timerId);
-            timerId = setInterval(() => {
-                if (time <= 0) {
-                    stopTimer();
-                    // 通知の表示
-                    if ('Notification' in window) {
-                        const notification = new Notification('ポモドーロタイマー', {
-                            body: `時間になりました！${currentMode === 'work' ? '作業' : '休憩'}が終了しました。`,
-                            icon: '/favicon.ico',
-                            tag: 'pomodoro-timer'
-                        });
-                        
-                        // 通知がクリックされた時の処理
-                        notification.onclick = () => {
-                            window.focus();
-                        };
-                    }
-                    
-                    playNotificationSound();
-                    if (isAutoMode) {
-                        switchMode(currentMode === 'work' ? 'short-break' : 'work');
-                        startTimer();
-                    } else {
-                        if (currentMode === 'work') {
-                            sessionCount++;
-                            updateSessionCount();
-                        }
-                    }
-                    clearInterval(preventSleepInterval);
-                    return;
-                }
-                time--;
-                updateDisplay();
-            }, 1000);
-        }
-    }
-}
+// モードボタンのクリックイベント
+modeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const mode = button.dataset.mode;
+        switchMode(mode);
+        updateDisplay();
+    });
+});
 
-// スリープ許可関数
-function allowSleep() {
-    document.body.style.opacity = ''; // スタイルをリセット
+// タイマーコントロールのイベントリスナー
+startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+// タイマーカウントダウン
+if (timerId) {
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+        if (time <= 0) {
+            stopTimer();
+            // 通知の表示
+            if ('Notification' in window) {
+                const notification = new Notification('ポモドーロタイマー', {
+                    body: `時間になりました！${currentMode === 'work' ? '作業' : '休憩'}が終了しました。`,
+                    icon: '/favicon.ico',
+                    tag: 'pomodoro-timer'
+                });
+                
+                // 通知がクリックされた時の処理
+                notification.onclick = () => {
+                    window.focus();
+                };
+            }
+            
+            playNotificationSound();
+            if (isAutoMode) {
+                switchMode(currentMode === 'work' ? 'short-break' : 'work');
+                startTimer();
+            } else {
+                if (currentMode === 'work') {
+                    sessionCount++;
+                    updateSessionCount();
+                }
+            }
+            return;
+        }
+        time--;
+        updateDisplay();
+    }, 1000);
 }
 
 // モードと対応する時間（秒）
