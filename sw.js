@@ -66,21 +66,7 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// 通知のリクエスト
-self.addEventListener('notificationclick', event => {
-    console.log('Service Worker: 通知クリック');
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(windowClients => {
-            for (const client of windowClients) {
-                client.focus();
-            }
-            if (windowClients.length === 0) {
-                return clients.openWindow('/pomodoro-timer/');
-            }
-        })
-    );
-});
+
 
 // キャッシュのインストール
 self.addEventListener('install', event => {
