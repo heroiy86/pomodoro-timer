@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+.env
+
+# build
+build/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
