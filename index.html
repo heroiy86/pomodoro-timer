@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポモドーロタイマー</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ポモドーロタイマー</h1>
+        <div class="timer-container">
+            <div class="time-display">25:00</div>
+            <div class="settings">
+                <div class="session-info">
+                    <span class="session-count">セッション: <span id="session-count">1</span></span>
+                </div>
+                <div class="work-time-selector">
+                    <span>作業時間:</span>
+                    <input type="number" id="work-time-input" min="1" max="120" value="25">
+                    <span>分</span>
+                </div>
+                <div class="auto-mode-selector">
+                    <label>
+                        <input type="checkbox" id="auto-mode"> 自動連続モード
+                        <span class="auto-mode-info">(作業 → 短い休憩 → 作業 → ...)</span>
+                    </label>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn" id="work-mode" data-mode="work">作業</button>
+                    <button class="mode-btn" id="short-break" data-mode="short-break">短い休憩 (5分)</button>
+                    <button class="mode-btn" id="long-break" data-mode="long-break">長い休憩 (15分)</button>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="start">開始</button>
+                <button id="stop">停止</button>
+                <button id="reset">リセット</button>
+            </div>
+        </div>
+    </div>
+    <audio id="notification-sound" src="sounds/notification.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
