@@ -251,19 +251,21 @@ function switchMode(mode) {
     updateModeButtons();
 }
 
-// イベントリスナーの設定
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
-resetBtn.addEventListener('click', resetTimer);
+(function() {
+    // イベントリスナーの設定
+    startBtn.addEventListener('click', startTimer);
+    stopBtn.addEventListener('click', stopTimer);
+    resetBtn.addEventListener('click', resetTimer);
 
-modeButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        switchMode(button.dataset.mode);
-        updateModeButtons();
+    modeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            switchMode(button.dataset.mode);
+            updateModeButtons();
+        });
     });
-});
 
-// 初期設定
-updateDisplay();
-updateSessionCount();
-updateModeButtons();
+    // 初期設定
+    updateDisplay();
+    updateSessionCount();
+    updateModeButtons();
+})();
