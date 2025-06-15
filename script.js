@@ -113,74 +113,72 @@ function switchMode(mode) {
     updateModeButtons();
 }
 
-(function() {
-    // イベントリスナーの設定
-    // 自動連続モードの切り替え
-    autoModeCheckbox.addEventListener('change', () => {
-        isAutoMode = autoModeCheckbox.checked;
-    });
+// イベントリスナーの設定
+// 自動連続モードの切り替え
+autoModeCheckbox.addEventListener('change', () => {
+    isAutoMode = autoModeCheckbox.checked;
+});
 
-    // 作業時間の変更を監視
-    workTimeInput.addEventListener('change', (e) => {
-        const newTime = parseInt(e.target.value);
-        if (newTime >= 1 && newTime <= 120) {
-            workTime = newTime;
-            if (currentMode === 'work') {
-                time = workTime * 60;
-                updateDisplay();
-            }
-        }
-    });
-
-    // モードボタンのクリックイベント
-    modeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const mode = button.dataset.mode;
-            switchMode(mode);
+// 作業時間の変更を監視
+workTimeInput.addEventListener('change', (e) => {
+    const newTime = parseInt(e.target.value);
+    if (newTime >= 1 && newTime <= 120) {
+        workTime = newTime;
+        if (currentMode === 'work') {
+            time = workTime * 60;
             updateDisplay();
-        });
+        }
+    }
+});
+
+// モードボタンのクリックイベント
+modeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const mode = button.dataset.mode;
+        switchMode(mode);
+        updateDisplay();
     });
+});
 
-    // タイマーコントロールのイベントリスナー
-    startBtn.addEventListener('click', startTimer);
-    stopBtn.addEventListener('click', stopTimer);
-    resetBtn.addEventListener('click', resetTimer);
+// タイマーコントロールのイベントリスナー
+startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+resetBtn.addEventListener('click', resetTimer);
 
-    // タイマーカウントダウン
-    if (timerId) {
-        clearInterval(timerId);
-        timerId = setInterval(() => {
-            if (time <= 0) {
-                stopTimer();
-                
-                // 自動連続モードの処理
-                if (isAutoMode) {
-                    if (currentMode === 'work') {
-                        // 作業 → 短い休憩
-                        switchMode('short-break');
-                        startTimer(); // 自動的に開始
-                    } else if (currentMode === 'short-break') {
-                        // 短い休憩 → 作業
-                        switchMode('work');
-                        startTimer(); // 自動的に開始
-                    }
-                    return;
-                }
-                
-                alert('時間になりました！');
+// タイマーカウントダウン
+if (timerId) {
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+        if (time <= 0) {
+            stopTimer();
+            
+            // 自動連続モードの処理
+            if (isAutoMode) {
                 if (currentMode === 'work') {
-                    sessionCount++;
-                    updateSessionCount();
+                    // 作業 → 短い休憩
+                    switchMode('short-break');
+                    startTimer(); // 自動的に開始
+                } else if (currentMode === 'short-break') {
+                    // 短い休憩 → 作業
+                    switchMode('work');
+                    startTimer(); // 自動的に開始
                 }
                 return;
             }
-            time--;
-            updateDisplay();
-        }, 1000);
-    }
+            
+            alert('時間になりました！');
+            if (currentMode === 'work') {
+                sessionCount++;
+                updateSessionCount();
+            }
+            return;
+        }
+        time--;
+        updateDisplay();
+    }, 1000);
+}
 
-    // 初期設定
-    updateDisplay();
-    updateSessionCount();
-    updateModeButtons();
-})();
+// 初期設定
+updateDisplay();
+updateSessionCount();
+updateModeButtons();
