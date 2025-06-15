@@ -11,6 +11,72 @@ let currentMode = 'work'; // 現在のモード
 let sessionCount = 1; // セッション数
 let workTime = INITIAL_WORK_TIME; // 作業時間（分）
 let isAutoMode = false; // 自動連続モードの状態
+let isPreventSleep = false; // スリープ防止の状態
+
+// DOM要素
+const timeDisplay = document.querySelector('.time-display');
+const startBtn = document.getElementById('start');
+const stopBtn = document.getElementById('stop');
+const resetBtn = document.getElementById('reset');
+const sessionCountElement = document.getElementById('session-count');
+const modeButtons = document.querySelectorAll('.mode-btn');
+const workTimeInput = document.getElementById('work-time-input');
+const autoModeCheckbox = document.getElementById('auto-mode');
+const notificationSound = document.getElementById('notification-sound');
+const preventSleepCheckbox = document.getElementById('prevent-sleep'); // スリープ防止のチェックボックス
+
+// スリープ防止の設定
+preventSleepCheckbox.addEventListener('change', () => {
+    isPreventSleep = preventSleepCheckbox.checked;
+    if (isPreventSleep) {
+        preventSleep();
+    } else {
+        allowSleep();
+    }
+});
+
+// スリープ防止関数
+function preventSleep() {
+    // スクリーンの明るさを最大に設定
+    document.body.style.opacity = '1';
+    
+    // タッチイベントを追加してスリープ防止
+    if (isRunning) {
+        const preventSleepInterval = setInterval(() => {
+            document.body.dispatchEvent(new Event('touchstart'));
+        }, 30000); // 30秒ごとにタッチイベントを発火
+        
+        // タイマーカウントダウンが0になったときにクリア
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = setInterval(() => {
+                if (time <= 0) {
+                    stopTimer();
+                    playNotificationSound();
+                    if (isAutoMode) {
+                        switchMode(currentMode === 'work' ? 'short-break' : 'work');
+                        startTimer();
+                    } else {
+                        alert('時間になりました！');
+                        if (currentMode === 'work') {
+                            sessionCount++;
+                            updateSessionCount();
+                        }
+                    }
+                    clearInterval(preventSleepInterval);
+                    return;
+                }
+                time--;
+                updateDisplay();
+            }, 1000);
+        }
+    }
+}
+
+// スリープ許可関数
+function allowSleep() {
+    document.body.style.opacity = ''; // スタイルをリセット
+}
 
 // DOM要素
 const timeDisplay = document.querySelector('.time-display');
