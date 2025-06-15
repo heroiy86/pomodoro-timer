@@ -51,12 +51,14 @@
     <script>
         // Service Workerの登録
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('/pomodoro-timer/sw.js', {
+                scope: '/pomodoro-timer/'
+            })
                 .then(registration => {
                     console.log('Service Worker登録成功:', registration);
                 })
                 .catch(error => {
-                    console.log('Service Worker登録失敗:', error);
+                    console.error('Service Worker登録失敗:', error);
                 });
         }
 
