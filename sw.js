@@ -3,8 +3,7 @@ const urlsToCache = [
   '/pomodoro-timer/',
   '/pomodoro-timer/index.html',
   '/pomodoro-timer/styles.css',
-  '/pomodoro-timer/script.js',
-  '/pomodoro-timer/sounds/notification.mp3'
+  '/pomodoro-timer/script.js'
 ];
 
 // キャッシュのインストール

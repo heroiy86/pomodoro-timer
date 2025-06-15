@@ -259,6 +259,7 @@ resetBtn.addEventListener('click', resetTimer);
 modeButtons.forEach(button => {
     button.addEventListener('click', () => {
         switchMode(button.dataset.mode);
+        updateModeButtons();
     });
 });
 
