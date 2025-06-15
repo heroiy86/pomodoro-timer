@@ -1,11 +1,18 @@
-let time = 25 * 60; // 25分を秒に変換
-let isRunning = false;
-let timerId;
-let currentMode = 'work';
-let sessionCount = 1;
-let workTime = 25; // 作業時間（分）
+// 初期設定
+const INITIAL_WORK_TIME = 25; // デフォルトの作業時間（分）
+const SHORT_BREAK_TIME = 5; // 短い休憩時間（分）
+const LONG_BREAK_TIME = 15; // 長い休憩時間（分）
+
+// 状態管理
+let time = INITIAL_WORK_TIME * 60; // 現在の時間（秒）
+let isRunning = false; // タイマーの実行状態
+let timerId = null; // タイマーアイディー
+let currentMode = 'work'; // 現在のモード
+let sessionCount = 1; // セッション数
+let workTime = INITIAL_WORK_TIME; // 作業時間（分）
 let isAutoMode = false; // 自動連続モードの状態
 
+// DOM要素
 const timeDisplay = document.querySelector('.time-display');
 const startBtn = document.getElementById('start');
 const stopBtn = document.getElementById('stop');
@@ -14,7 +21,9 @@ const sessionCountElement = document.getElementById('session-count');
 const modeButtons = document.querySelectorAll('.mode-btn');
 const workTimeInput = document.getElementById('work-time-input');
 const autoModeCheckbox = document.getElementById('auto-mode');
+const notificationSound = document.getElementById('notification-sound');
 
+// イベントリスナー
 // 自動連続モードの切り替え
 autoModeCheckbox.addEventListener('change', () => {
     isAutoMode = autoModeCheckbox.checked;
@@ -35,10 +44,35 @@ workTimeInput.addEventListener('change', (e) => {
 // モードと対応する時間（秒）
 const modeTimes = {
     'work': workTime * 60,     // 作業モード: 設定された時間
-    'short-break': 5 * 60,     // 短い休憩: 5分
-    'long-break': 15 * 60      // 長い休憩: 15分
+    'short-break': SHORT_BREAK_TIME * 60,     // 短い休憩: 5分
+    'long-break': LONG_BREAK_TIME * 60      // 長い休憩: 15分
 };
 
+// 音声関連の設定
+notificationSound.volume = 0.5; // 音量を50%に設定
+notificationSound.loop = false; // ループ再生を無効
+
+// 音声再生の許可をリクエスト
+notificationSound.play()
+    .catch(() => {
+        console.log('音声再生の許可が必要です。');
+    })
+    .then(() => {
+        notificationSound.pause();
+    });
+
+// 音声再生関数
+function playNotificationSound() {
+    if (!notificationSound.paused) {
+        notificationSound.pause();
+    }
+    notificationSound.currentTime = 0;
+    notificationSound.play().catch(error => {
+        console.error('音声再生に失敗しました:', error);
+    });
+}
+
+// ユーティリティ関数
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -59,14 +93,6 @@ function updateModeButtons() {
         if (button.dataset.mode === currentMode) {
             button.classList.add('active');
         }
-    });
-}
-
-function playNotificationSound() {
-    const audio = document.getElementById('notification-sound');
-    audio.currentTime = 0;
-    audio.play().catch(error => {
-        console.error('音声再生に失敗しました:', error);
     });
 }
 
