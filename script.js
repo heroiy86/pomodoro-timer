@@ -99,16 +99,57 @@ const modeTimes = {
 };
 
 // 音声関連の設定
-notificationSound.volume = 0.5; // 音量を50%に設定
-notificationSound.loop = false; // ループ再生を無効
+let isAudioReady = false;
+let audioStatusElement = document.getElementById('audio-status');
+const testSoundButton = document.getElementById('test-sound');
+
+// テスト音声ボタンのイベントリスナー
+testSoundButton.addEventListener('click', async () => {
+    try {
+        // ユーザーのアクションに紐づけて音声を再生
+        await notificationSound.play();
+        notificationSound.pause();
+        notificationSound.currentTime = 0;
+        isAudioReady = true;
+        audioStatusElement.textContent = '音声再生の準備完了！';
+        testSoundButton.textContent = 'テスト音声 (準備完了)';
+    } catch (error) {
+        console.error('音声再生の許可が必要です:', error);
+        audioStatusElement.textContent = '音声再生の許可が必要です。';
+    }
+});
 
 // 音声ファイルの長さを確認
 notificationSound.addEventListener('loadedmetadata', () => {
     console.log('音声ファイルの長さ:', notificationSound.duration, '秒');
+    audioStatusElement.textContent = '音声ファイルが読み込まれました。';
 });
 
 // 音声再生の許可をリクエスト
-notificationSound.play()
+notificationSound.addEventListener('canplaythrough', () => {
+    audioStatusElement.textContent = '音声ファイルが読み込み完了しました。';
+});
+
+notificationSound.volume = 0.5; // 音量を50%に設定
+notificationSound.loop = false; // ループ再生を無効
+
+// 音声再生関数
+function playNotificationSound() {
+    if (!isAudioReady) {
+        audioStatusElement.textContent = '音声再生の準備が完了していません。';
+        return;
+    }
+    
+    if (!notificationSound.paused) {
+        notificationSound.pause();
+    }
+    notificationSound.currentTime = 0;
+    
+    notificationSound.play().catch(error => {
+        console.error('音声再生に失敗しました:', error);
+        audioStatusElement.textContent = '音声再生に失敗しました。';
+    });
+}
 
 // 音声再生の許可をリクエスト
 notificationSound.play()

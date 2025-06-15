@@ -42,8 +42,12 @@
                 <button id="reset">リセット</button>
             </div>
         </div>
+        <div class="audio-settings">
+            <button id="test-sound" class="btn">テスト音声</button>
+            <div id="audio-status">音声再生の準備中...</div>
+        </div>
+        <audio id="notification-sound" src="sounds/notification.mp3"></audio>
     </div>
-    <audio id="notification-sound" src="sounds/notification.mp3"></audio>
     <script>
         // Service Workerの登録
         if ('serviceWorker' in navigator) {
