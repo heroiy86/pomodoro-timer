@@ -49,6 +49,25 @@
         </div>
     </div>
     <audio id="notification-sound" src="sounds/notification.mp3"></audio>
+    <script>
+        // Service Workerの登録
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker登録成功:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker登録失敗:', error);
+                });
+        }
+
+        // 通知の許可をリクエスト
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                console.log('通知の許可:', permission);
+            });
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

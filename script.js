@@ -52,12 +52,25 @@ function preventSleep() {
             timerId = setInterval(() => {
                 if (time <= 0) {
                     stopTimer();
+                    // 通知の表示
+                    if ('Notification' in window) {
+                        const notification = new Notification('ポモドーロタイマー', {
+                            body: `時間になりました！${currentMode === 'work' ? '作業' : '休憩'}が終了しました。`,
+                            icon: '/favicon.ico',
+                            tag: 'pomodoro-timer'
+                        });
+                        
+                        // 通知がクリックされた時の処理
+                        notification.onclick = () => {
+                            window.focus();
+                        };
+                    }
+                    
                     playNotificationSound();
                     if (isAutoMode) {
                         switchMode(currentMode === 'work' ? 'short-break' : 'work');
                         startTimer();
                     } else {
-                        alert('時間になりました！');
                         if (currentMode === 'work') {
                             sessionCount++;
                             updateSessionCount();
