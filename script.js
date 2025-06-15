@@ -225,10 +225,10 @@ function startTimer() {
 }
 
 function stopTimer() {
-    if (!isRunning) return;
-    
-    clearInterval(timerId);
     isRunning = false;
+    clearInterval(timerId);
+    timerId = null;
+    startBtn.textContent = '開始';
 }
 
 function resetTimer() {
